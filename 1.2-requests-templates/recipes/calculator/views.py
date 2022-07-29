@@ -34,5 +34,4 @@ def recipes(request, recipe):
     count = int(request.GET.get("servings", 1))
     data = DATA.get(recipe)
     context = {'recipe': {key: value * count for key, value in data.items()}} if data else None
-    print(context)
     return render(request, 'calculator/index.html', context)
