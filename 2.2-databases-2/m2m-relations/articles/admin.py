@@ -8,19 +8,17 @@ from .models import Article, ArticleScope, Scope
 class ArticleScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
         count = 0
-        tags = []
         tags_dict = {}
         for c in self.forms:
             if c.cleaned_data.get('is_main'):
                 count += 1
+                if count == 2:
+                    raise ValidationError('Основным может быть только один раздел')
             if c.cleaned_data.get('tag'):
-                tags.append(c.cleaned_data.get('tag').id)
-            if count > 1:
-                raise ValidationError('Основным может быть только один раздел')
-        for tag in tags:
-            tags_dict[tag] = tags_dict.get(tag, 0) + 1
-            if tags_dict[tag] == 2:
-                raise ValidationError('Не повторяйте разделы')
+                tag = c.cleaned_data.get('tag').id
+                tags_dict[tag] = tags_dict.get(tag, 0) + 1
+                if tags_dict[tag] == 2:
+                    raise ValidationError('Не повторяйте разделы')
 
         return super().clean()  # вызываем базовый код переопределяемого метода
 
@@ -40,8 +38,3 @@ class ArticleAdmin(admin.ModelAdmin):
 @admin.register(Scope)
 class Scope(admin.ModelAdmin):
     list_display = ['id', 'name']
-
-
-
-
-
