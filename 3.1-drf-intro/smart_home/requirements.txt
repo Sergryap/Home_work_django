@@ -1,3 +1,5 @@
 django
 djangorestframework
 psycopg2-binary
+mysqlclient==2.1.1
+Pillow==9.2.0
