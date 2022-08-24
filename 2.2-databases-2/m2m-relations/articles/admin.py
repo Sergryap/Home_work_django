@@ -33,6 +33,10 @@ class ArticleScopeInline(admin.TabularInline):
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleScopeInline]
+    list_display = ['title', 'text', 'published_at']
+    list_editable = ['published_at']
+    list_filter = ['title', 'published_at']
+    extra = 3
 
 
 @admin.register(Scope)

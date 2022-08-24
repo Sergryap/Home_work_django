@@ -9,7 +9,7 @@ class Article(models.Model):
     image = models.ImageField(null=True, blank=True, verbose_name='Изображение',)
 
     class Meta:
-        verbose_name = 'Статья'
+        verbose_name = 'статью'
         verbose_name_plural = 'Статьи'
         ordering = ['-published_at']
 
