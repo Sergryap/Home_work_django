@@ -24,7 +24,6 @@ class SensorAPIUpdate(generics.RetrieveUpdateAPIView):
 class MeasurementAPIList(generics.ListCreateAPIView):
 	queryset = Measurement.objects.all()
 	serializer_class = MeasurementSerializer
-	parser_classes = [JSONParser, FileUploadParser]
 
 
 class MeasurementAPIUpdate(generics.RetrieveUpdateAPIView):
