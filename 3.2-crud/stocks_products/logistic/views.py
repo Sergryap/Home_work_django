@@ -21,22 +21,38 @@ class ProductViewSet(ModelViewSet):
 
 class StockViewSet(ModelViewSet):
 
+    # def get_queryset(self):
+    #     q = self.request.query_params.get('q', None)
+    #     if q:
+    #         stocks = (
+    #             StockProduct.objects
+    #             # Далее задается поиск по всевозможным полям связанных таблиц
+    #             # Это было тяжело
+    #             .filter(
+    #                 Q(product__title__icontains=q) |
+    #                 Q(product__description__icontains=q) |
+    #                 Q(stock__address__icontains=q))
+    #             .select_related('stock', 'product')
+    #         )
+    #         stocks_id = [stock.stock_id for stock in stocks]
+    #         return Stock.objects.filter(id__in=stocks_id)
+    #     return Stock.objects.all()
+
     def get_queryset(self):
         q = self.request.query_params.get('q', None)
         if q:
-            stocks = (
-                StockProduct.objects
-                # Далее задается поиск по всевозможным полям связанных таблиц
-                # Это было тяжело
+            return (
+                Stock.objects
                 .filter(
-                    Q(product__title__icontains=q) |
-                    Q(product__description__icontains=q) |
-                    Q(stock__address__icontains=q))
-                .select_related('stock', 'product')
+                    Q(products__title__icontains=q) |
+                    Q(products__description__icontains=q) |
+                    Q(address__icontains=q))
+                .prefetch_related('products')
             )
-            stocks_id = [stock.stock_id for stock in stocks]
-            return Stock.objects.filter(id__in=stocks_id)
         return Stock.objects.all()
+
+
+
 
     serializer_class = StockSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

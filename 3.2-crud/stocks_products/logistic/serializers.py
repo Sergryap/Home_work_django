@@ -53,22 +53,26 @@ class StockSerializer(serializers.ModelSerializer):
         # в нашем случае: таблицу StockProduct
         # с помощью списка positions
 
-        # products_id = [product.id for product in Product.objects.all()]
-        # for position in positions:
-        #     StockProduct.objects.update_or_create(**position, stock_id=stock.pk)
-
         for position in positions:
-            product_id = position.get('product').pk
-            flag = True
             for instance_position in instance.positions.all():
-                if product_id == instance_position.product_id:
-                    p = StockProduct.objects.get(pk=instance_position.pk)
-                    p.quantity = position.get("quantity", instance_position.quantity)
-                    p.price = position.get("price", instance_position.price)
-                    p.save()
-                    flag = False
-            if flag:
-                StockProduct.objects.create(**position, stock_id=stock.pk)
+                StockProduct.objects.update_or_create(
+                    product=position.get('product'),
+                    stock_id=stock.pk,
+                    defaults={'quantity': position.get('quantity'), 'price': position.get('price'), 'product': position.get('product')}
+                )
+
+        # for position in positions:
+        #     product_id = position.get('product').pk
+        #     flag = True
+        #     for instance_position in instance.positions.all():
+        #         if product_id == instance_position.product_id:
+        #             p = StockProduct.objects.get(pk=instance_position.pk)
+        #             p.quantity = position.get("quantity", instance_position.quantity)
+        #             p.price = position.get("price", instance_position.price)
+        #             p.save()
+        #             flag = False
+        #     if flag:
+        #         StockProduct.objects.create(**position, stock_id=stock.pk)
 
         return stock
 

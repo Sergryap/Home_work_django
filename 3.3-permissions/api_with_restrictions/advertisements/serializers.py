@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
+from django.db.models import Count
 from rest_framework import serializers
+from rest_framework.response import Response
 
 from advertisements.models import Advertisement
 
@@ -33,13 +35,22 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         # изменить или переопределить его через API нельзя.
         # обратите внимание на `context` – он выставляется автоматически
         # через методы ViewSet.
-        # само поле при этом объявляется как `read_only=True`
+        # само поле при этом объявляется как `read_only=True
+
         validated_data["creator"] = self.context["request"].user
         return super().create(validated_data)
 
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
-        # TODO: добавьте требуемую валидацию
+        q = (
+            Advertisement.objects
+            .filter(creator=self.context["request"].user, status='OPEN')
+            .aggregate(open_count=Count('id'))
+        )
+        n = 10
+        msg = f"Количество активных объявление не должно превышать {n}"
+        if q['open_count'] >= n:
+            raise serializers.ValidationError(msg)
 
         return data
