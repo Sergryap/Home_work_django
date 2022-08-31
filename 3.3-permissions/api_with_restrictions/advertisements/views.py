@@ -1,6 +1,5 @@
-from django_filters import FilterSet
 from django.contrib.auth.models import User
-from django_filters.rest_framework import DjangoFilterBackend, DateFromToRangeFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
@@ -10,14 +9,7 @@ from rest_framework.viewsets import ModelViewSet
 from .models import Advertisement
 from .permissions import IsOwnerOrReadOnly
 from .serializers import AdvertisementSerializer
-
-
-class F(FilterSet):
-    created_at = DateFromToRangeFilter()
-
-    class Meta:
-        model = Advertisement
-        fields = ['title', 'status', 'creator', 'created_at']
+from .filters import AdvertisementFilter
 
 
 class AdvertisementViewSet(ModelViewSet):
@@ -25,7 +17,7 @@ class AdvertisementViewSet(ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter, ]
-    filterset_class = F
+    filterset_class = AdvertisementFilter
     # filterset_fields = ['title', 'status', 'creator', 'created_at']
     search_fields = ['title', 'description', ]
     ordering_fields = ['-created_at', '-updated_at', 'title', ]

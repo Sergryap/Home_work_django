@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from .password import password
+from .password import password, ssh_password, ssh_address_or_host
+from sshtunnel import SSHTunnelForwarder
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,34 +97,34 @@ WSGI_APPLICATION = 'api_with_restrictions.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+
+# ssh_tunnel = SSHTunnelForwarder(
+#     ssh_address_or_host=f"{ssh_address_or_host}",
+#     ssh_username='root',
+#     ssh_password=f"{ssh_password}",
+#     remote_bind_address=('localhost', 5432),
+# )
+# ssh_tunnel.start()
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'netology_classified_ads',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'NAME': 'netology_classified_ads',
         'USER': 'postgres',
         'PASSWORD': f'{password}',
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'HOST': 'localhost',
+    #     'PORT': ssh_tunnel.local_bind_port,
+    #     'NAME': 'postgres',
+    #     'USER': 'postgres',
+    #     'PASSWORD': f'{password}',
+    # },
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': '',
-#     },
-#     'shhtunnel_db': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'HOST': '45.84.226.238',
-#         'PORT': '22',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#     },
-# }
 
 
 # Password validation
