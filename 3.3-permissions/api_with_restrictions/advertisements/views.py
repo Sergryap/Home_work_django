@@ -37,8 +37,10 @@ class AdvertisementViewSet(ModelViewSet):
         )
         return Response({'Избранные объявления': favorite_advertisements.values()})
 
-    @action(methods=['patch'], detail=True)
+    @action(methods=['patch'], detail=True, url_path='favorite')
     def add_favorite(self, request, pk=None):
+        if int(pk) not in [pk['pk'] for pk in Advertisement.objects.values('pk')]:
+            return Response({'error': f"Объявления с id={pk} не существует!"})
         favorite_advertisement = Advertisement.objects.get(pk=pk)
         if favorite_advertisement.creator_id == request.user.pk:
             return Response({'error': "Нельзя добавить свое объявление в избранное!"})
