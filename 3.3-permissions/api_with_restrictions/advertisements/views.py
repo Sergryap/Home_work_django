@@ -39,7 +39,8 @@ class AdvertisementViewSet(ModelViewSet):
 
     @action(methods=['patch'], detail=True, url_path='favorite')
     def add_favorite(self, request, pk=None):
-        if int(pk) not in [pk['pk'] for pk in Advertisement.objects.values('pk')]:
+        # if int(pk) not in [pk['pk'] for pk in Advertisement.objects.values('pk')]:
+        if not Advertisement.objects.filter(pk=pk).exists():
             return Response({'error': f"Объявления с id={pk} не существует!"})
         favorite_advertisement = Advertisement.objects.get(pk=pk)
         if favorite_advertisement.creator_id == request.user.pk:
