@@ -50,7 +50,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         )
         n = 10
         msg = f"Количество активных объявление не должно превышать {n}"
-        if q['open_count'] >= n:
-            raise serializers.ValidationError(msg)
+        if self.context["request"].method == 'POST' or data.get('status', None) == 'OPEN':
+            if q['open_count'] >= n:
+                raise serializers.ValidationError(msg)
 
         return data
