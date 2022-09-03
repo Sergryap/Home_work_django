@@ -1,4 +1,7 @@
+from django.core import validators
 from django.db import models
+
+from django_testing.settings import MAX_STUDENTS_PER_COURSE
 
 
 class Student(models.Model):

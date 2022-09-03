@@ -3,7 +3,9 @@ import pytest
 from django.urls import reverse
 from model_bakery import baker
 from rest_framework.test import APIClient
-from students.models import Course
+
+from django_testing.settings import MAX_STUDENTS_PER_COURSE
+from students.models import Course, Student
 
 
 @pytest.fixture
@@ -25,6 +27,14 @@ def id_course(courses):
 def course_factory():
     def factory(*args, **kwargs):
         return baker.make(Course, *args, **kwargs)
+
+    return factory
+
+
+@pytest.fixture
+def student_factory():
+    def factory(*args, **kwargs):
+        return baker.make(Student, *args, **kwargs)
 
     return factory
 
@@ -91,3 +101,30 @@ def test_update_course(client, course_factory, id_course):
 def test_delete_course(client, course_factory, id_course):
     client.delete(f"/api/v1/courses/{id_course}/")
     assert Course.objects.filter(pk=id_course).count() == 0
+
+
+#  Проверка на созданние не более 20 студентов в группе
+
+@pytest.mark.parametrize(
+    ["max_students", "count_student"],
+    (
+        (20, 2), (20, 21)
+    )
+)
+@pytest.mark.django_db
+def test_max_student(client, max_students, count_student, student_factory, settings):
+    students = student_factory(_quantity=count_student)
+    count = Course.objects.count()
+    data = {
+        "name": "test_course",
+        "students": [student.id for student in students]
+    }
+    # Почему то значение MAX_STUDENTS_PER_COURSE не переопределяется следуюущей строкой и все-равно берется равным 20.
+    # В документации ничего другого не нашел. Вроде так все и должно работать.
+    settings.MAX_STUDENTS_PER_COURSE = max_students
+    client.post("/api/v1/courses/", data=data)
+
+    if count_student > max_students:
+        assert Course.objects.count() == count
+    else:
+        assert Course.objects.count() == count + 1
