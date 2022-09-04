@@ -4,9 +4,13 @@ from django.urls import reverse
 from model_bakery import baker
 from rest_framework.test import APIClient
 
-from django_testing.settings import MAX_STUDENTS_PER_COURSE
+# from django_testing.settings import MAX_STUDENTS_PER_COURSE
 from students.models import Course, Student
 
+
+# @pytest.fixture
+# def set_max_student(settings):
+#     settings.MAX_STUDENTS_PER_COURSE = 2
 
 @pytest.fixture
 def client():
@@ -61,9 +65,9 @@ def test_get_courses(client, course_factory):
 # проверка фильтрации списка курсов по id
 @pytest.mark.django_db
 def test_filter_courses(client, course_factory, id_course):
-    response = client.get(f"/api/v1/courses/{id_course}/")
+    response = client.get(f"/api/v1/courses/?id={id_course}")
     data = response.json()
-    assert data['id'] == id_course
+    assert data[0]['id'] == id_course
 
 
 # проверка фильтрации списка курсов по name
