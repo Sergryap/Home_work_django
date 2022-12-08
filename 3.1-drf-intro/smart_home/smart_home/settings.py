@@ -84,7 +84,7 @@ DATABASES = {
         'HOST': 'rs1180w5.beget.tech',
         'PORT': '3306',
         'USER': 'rs1180w5_sm_home',
-        'PASSWORD': 'iZ8ThsTu',
+        'PASSWORD': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
